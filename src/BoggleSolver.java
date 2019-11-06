@@ -12,8 +12,6 @@ public class BoggleSolver {
     private TST<String> allWords;
     private BoggleBoard b;
 
-    private int size;
-
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
     public BoggleSolver(String[] dictionary) {
@@ -29,38 +27,37 @@ public class BoggleSolver {
         adjFull = new ST<>();
         allWords = new TST<>();
         b = board;
-        size = board.cols();
 
-        int [][] _board = new int[size][size];
+        int [][] _board = new int[board.rows()][board.cols()];
 
-        for (int row = 0; row < size; row++){
-            for (int col = 0; col < size; col++ ){
+        for (int row = 0; row < board.rows(); row++){
+            for (int col = 0; col < board.cols(); col++ ){
                 _board[row][col] = toNumber(row, col);
             }
         }
 
-        for (int row = 0; row < size; row++ ){
-            for (int col = 0; col < size; col++ ){
+        for (int row = 0; row < board.rows(); row++ ){
+            for (int col = 0; col < board.cols(); col++ ){
                 Bag adj = new Bag();
                 if (row > 0) {
                     adj.add(_board[row - 1][col]);
                     if (col > 0) {
                         adj.add(_board[row - 1][col - 1]);
                     }
-                    if (col < size - 1) {
+                    if (col < board.cols() - 1) {
                         adj.add(_board[row - 1][col + 1]);
                     }
                 }
-                if (row < size - 1) {
+                if (row < board.rows() - 1) {
                     adj.add(_board[row + 1][col]);
                     if (col > 0) {
                         adj.add(_board[row + 1][col - 1]);
                     }
-                    if (col < size - 1) {
+                    if (col < board.cols() - 1) {
                         adj.add(_board[row + 1][col + 1]);
                     }
                 }
-                if (col + 1 < size) {
+                if (col + 1 < board.cols()) {
                     adj.add(_board[row][col + 1]);
                 }
                 if (col - 1 >= 0) {
@@ -72,8 +69,8 @@ public class BoggleSolver {
 
 
 
-        for (int i = 0; i < size * size; i++) {
-            boolean[] marked = new boolean[size * size];
+        for (int i = 0; i < board.cols() * board.rows(); i++) {
+            boolean[] marked = new boolean[board.cols() * board.rows()];
             marked[i] = true;
             char c = board.getLetter(rowFromNumber(i), colFromNumber(i));
             if (c == 'Q') {
@@ -95,8 +92,10 @@ public class BoggleSolver {
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
     // (You can assume the word contains only the uppercase letters A through Z.)
     public int scoreOf(String word) {
-        if (words.contains(word)) {
-            int length = words.get(word);
+        if (dictionary.contains(word)) {
+            int length = dictionary.get(word).length();
+            if (length < 3)
+                return 0;
             if (length <= 4)
                 return 1;
             if (length == 5)
@@ -147,13 +146,13 @@ public class BoggleSolver {
     }
 
     private int toNumber (int row, int col) {
-        return size * row + col;
+        return b.cols() * row + col;
     }
     private int colFromNumber (int num) {
-        return num % size;
+        return num % b.cols();
     }
     private int rowFromNumber (int num) {
-        return num / size;
+        return num / b.cols();
     }
 
     private boolean[] copyArray(boolean[] arr){
